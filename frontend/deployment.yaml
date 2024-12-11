@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: yourusername/puppy-adoption-frontend:latest
+          image: omerbenda98/puppy-adoption-frontend:latest
           ports:
             - containerPort: 3000

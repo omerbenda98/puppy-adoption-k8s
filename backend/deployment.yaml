@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: backend
-          image: yourusername/puppy-adoption-backend:latest
+          image: omerbenda98/puppy-adoption-backend:latest
           ports:
             - containerPort: 8181
