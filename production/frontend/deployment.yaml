@@ -1,0 +1,37 @@
+# production/frontend/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: omerbenda98/puppy-adoption-frontend:latest
+          ports:
+            - containerPort: 3000
+          env: # Fixed indentation and structure for env
+            - name: NODE_ENV
+              value: "production" # Changed to production
+            - name: BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: API_URL
+                  optional: true
+            - name: HOST
+              value: "puppy-adoption.local" # Add this
+            - name: WDS_SOCKET_HOST
+              value: "puppy-adoption.local"
+            - name: KUBERNETES_SERVICE_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
