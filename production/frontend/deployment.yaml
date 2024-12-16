@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: omerbenda98/puppy-adoption-frontend:latest
+          image: omerbenda98/puppy-adoption-frontend:661b6632024a0374310e86766445c2c8a0286f1c
           ports:
             - containerPort: 3000
           env: # Fixed indentation and structure for env
