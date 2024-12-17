@@ -1,0 +1,21 @@
+# application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/omerbenda98/puppy-adoption-k8s.git # Your K8s manifests repo
+    targetRevision: main
+    path: production/frontend # Directory containing your deployment.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: production # Namespace where you want to deploy your app
+  syncPolicy:
+    automated:
+      prune: true # Delete resources that are no longer defined in Git
+      selfHeal: true # Sync if there's a difference between Git and cluster state
+    syncOptions:
+      - CreateNamespace=true
