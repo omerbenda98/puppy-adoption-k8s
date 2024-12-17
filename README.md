@@ -28,6 +28,11 @@ to start in development mode:
 Frontend: http://localhost:3000
 Backend: http://localhost:8181
 
+# Switch namespace
+
+kubectl config set-context --current --namespace=development
+kubectl config set-context --current --namespace=production
+
 ### Cluster Information
 
 ```bash
@@ -93,11 +98,6 @@ kubectl get ingress
 
 kubectl create namespace development
 kubectl create namespace production
-
-# Switch namespace
-
-kubectl config set-context --current --namespace=development
-kubectl config set-context --current --namespace=production
 
 # Restart deployments
 
