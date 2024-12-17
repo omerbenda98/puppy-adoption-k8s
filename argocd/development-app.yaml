@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend-development
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/omerbenda98/puppy-adoption-k8s.git
+    targetRevision: main
+    path: development/frontend
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: development
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
