@@ -33,6 +33,10 @@ Backend: http://localhost:8181
 kubectl config set-context --current --namespace=development
 kubectl config set-context --current --namespace=production
 
+# argoCD UI:
+
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
 ### Cluster Information
 
 ```bash
