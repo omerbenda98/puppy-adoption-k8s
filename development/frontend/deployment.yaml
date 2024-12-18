@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: omerbenda98/puppy-adoption-frontend:1a2739643cca8dc30573329ab9c1c4e8e611f0ca
+          image: omerbenda98/puppy-adoption-frontend:37ee63743fe776ee0b80a0e8aedfd1502a227cc4
           imagePullPolicy: Always # Added for development
           ports:
             - containerPort: 3000
