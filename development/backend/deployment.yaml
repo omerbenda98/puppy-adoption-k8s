@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: omerbenda98/puppy-adoption-backend:c8b19e656b0a560ff5976340a0a39915c1bfb13f
+          image: omerbenda98/puppy-adoption-backend:v1.2
           ports:
             - containerPort: 8181
           env:
