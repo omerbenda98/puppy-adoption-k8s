@@ -1,125 +1,121 @@
-# Puppy Adoption Kubernetes Configuration
+Kubernetes/Minikube Command Reference
+Starting Minikube
+bashCopy# Start Minikube cluster
+minikube start
 
-This repository contains Kubernetes configuration files for both development and production environments of the Puppy Adoption application.
+# Verify cluster status
 
-## Prerequisites
+minikube status
 
-- Minikube installed and running
-- kubectl configured
-- Docker Hub access (for pushing images)
+# Enable required addons
 
-## Common Commands
+minikube addons enable ingress
+minikube addons enable metrics-server
 
-to start in production mode:
+# Namespace Management
 
-1. kubectl config set-context --current --namespace=production
-2. minikube tunnel
-3. access at http://puppy-adoption.local
+kubectl get namespaces
 
-to start in development mode:
+# Check pods in production namespace
 
-1. kubectl config set-context --current --namespace=development
+kubectl get pods -n production
+kubectl describe pods -n production
 
-# Start port forwarding (run each in separate terminal)
+# Check pods in development namespace
 
-2. kubectl port-forward service/backend-service 8181:8181
-3. kubectl port-forward service/frontend-service 3000:3000
+kubectl get pods -n development
+kubectl describe pods -n development
 
-Frontend: http://localhost:3000
-Backend: http://localhost:8181
+# Check pods in ArgoCD namespace
 
-# Switch namespace
+kubectl get pods -n argocd
+kubectl describe pods -n argocd
 
-kubectl config set-context --current --namespace=development
-kubectl config set-context --current --namespace=production
+# Check pods in Jenkins namespace
 
-# argoCD UI:
+kubectl get pods -n jenkins
+kubectl describe pods -n jenkins
+
+# Watch pods across all namespaces
+
+kubectl get pods --all-namespaces -w
+
+# Check pod logs
+
+kubectl logs <pod-name> -n <namespace>
+ArgoCD Setup and Access
+bashCopy# Install ArgoCD (if not already installed)
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Wait for all ArgoCD pods to be ready
+
+kubectl wait --for=condition=Ready pods --all -n argocd --timeout=300s
+
+# Port forward ArgoCD UI (default port 8080)
 
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 
-### Cluster Information
+# Get initial admin password
 
-```bash
-# Get all running pods
-kubectl get pods
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+Jenkins Setup and Access
+bashCopy# Port forward Jenkins UI (default port 8090)
+kubectl port-forward svc/jenkins -n jenkins 8090:8080
 
-# Get all services
-kubectl get services
+# Get Jenkins admin password (if using default Jenkins Helm chart)
 
-# Get deployments
-kubectl get deployments
+kubectl exec -n jenkins <jenkins-pod-name> -- cat /var/jenkins_home/secrets/initialAdminPassword
+Additional Useful Commands
+bashCopy# Check cluster health
+kubectl cluster-info
+kubectl get nodes
+kubectl top nodes
 
-# Check pod logs
-kubectl logs <pod-name>
-kubectl logs deployment/frontend-deployment
-kubectl logs deployment/backend-deployment
+# Check deployments across namespaces
 
-# Get detailed information about a resource
-kubectl describe pod <pod-name>
-kubectl describe service <service-name>
-```
+kubectl get deployments --all-namespaces
 
-# Apply configurations
+# Check services
 
-kubectl apply -f development/secrets/mongosecret.yaml
-kubectl apply -f development/configmap.yaml
-kubectl apply -f development/frontend/
-kubectl apply -f development/backend/
+kubectl get services --all-namespaces
 
-# Apply configurations
+# Check ingress rules
 
-kubectl apply -f production/secrets/mongosecret.yaml
-kubectl apply -f production/configmap.yaml
-kubectl apply -f production/frontend/
-kubectl apply -f production/backend/
-kubectl apply -f production/ingress.yaml
+kubectl get ingress --all-namespaces
 
-# Enable ingress (Minikube)
+# View resource usage
 
-minikube addons enable ingress
+kubectl top pods --all-namespaces
+kubectl top nodes
 
-# Get ingress address
+# Context and configuration
 
-kubectl get ingress
+kubectl config current-context
+kubectl config view
 
-# Apply configurations
+# Debugging commands
 
-kubectl apply -f production/secrets/mongosecret.yaml
-kubectl apply -f production/configmap.yaml
-kubectl apply -f production/frontend/
-kubectl apply -f production/backend/
-kubectl apply -f production/ingress.yaml
+kubectl describe nodes
+kubectl get events --all-namespaces
+Port Forwarding Quick Reference
+bashCopy# ArgoCD UI
+kubectl port-forward svc/argocd-server -n argocd 8080:443
 
-# Enable ingress (Minikube)
+# Jenkins UI
 
-minikube addons enable ingress
+kubectl port-forward svc/jenkins-service -n jenkins 8090:8080
 
-# Get ingress address
+# Custom application (example)
 
-kubectl get ingress
+kubectl port-forward svc/<service-name> -n <namespace> <local-port>:<service-port>
+Cleanup Commands
+bashCopy# Stop Minikube
+minikube stop
 
-# Create namespaces
+# Delete Minikube cluster
 
-kubectl create namespace development
-kubectl create namespace production
+minikube delete
 
-# Restart deployments
+# Delete specific namespace and all its resources
 
-kubectl rollout restart deployment frontend-deployment
-kubectl rollout restart deployment backend-deployment
-
-# Check pod logs with follow
-
-kubectl logs -f <pod-name>
-
-# Describe resources for troubleshooting
-
-kubectl describe pod <pod-name>
-kubectl describe service <service-name>
-kubectl describe ingress <ingress-name>
-
-# Delete resources if needed
-
-kubectl delete deployment <deployment-name>
-kubectl delete service <service-name>
-kubectl delete pod <pod-name>
+kubectl delete namespace <namespace-name>
