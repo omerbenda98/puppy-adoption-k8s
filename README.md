@@ -119,3 +119,5 @@ minikube delete
 # Delete specific namespace and all its resources
 
 kubectl delete namespace <namespace-name>
+
+kubectl config set-context --current --namespace=jenkins

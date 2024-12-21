@@ -13,7 +13,7 @@ spec:
       labels:
         app: jenkins-server
     spec:
-      serviceAccountName: jenkins-admin
+      serviceAccountName: jenkins
       securityContext:
         fsGroup: 1000
       initContainers:

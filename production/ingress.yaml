@@ -6,12 +6,12 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - puppy-adoption.local
-      secretName: puppy-tls-secret
+  # tls:
+  #   - hosts:
+  #       - puppyadoptions.duckdns.org
+  #     secretName: puppy-tls-secret
   rules:
-    - host: puppy-adoption.local
+    - host: puppyadoptions.duckdns.org
       http:
         paths:
           - path: /api
