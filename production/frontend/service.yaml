@@ -4,9 +4,10 @@ kind: Service
 metadata:
   name: frontend-service
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 3000 # Added hyphen for array item
       targetPort: 3000
+      nodePort: 30090
   selector:
     app: frontend
