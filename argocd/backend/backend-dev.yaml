@@ -1,18 +1,17 @@
-# production-app.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: frontend-production
+  name: backend-development
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/omerbenda98/puppy-adoption-k8s.git
     targetRevision: main
-    path: main/frontend
+    path: development/backend
   destination:
     server: https://kubernetes.default.svc
-    namespace: production
+    namespace: development
   syncPolicy:
     automated:
       prune: true
