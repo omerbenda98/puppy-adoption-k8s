@@ -13,77 +13,19 @@ spec:
       labels:
         app: jenkins
     spec:
-      securityContext:
-        fsGroup: 1000
-      initContainers:
-        - name: node-installer
-          image: node:20
-          command: ["sh", "-c"]
-          args:
-            - |
-              cp $(which node) /nodejs/node
-              cp $(which npm) /nodejs/npm
-          volumeMounts:
-            - name: nodejs-bin
-              mountPath: /nodejs
-        - name: docker-installer
-          image: docker:latest
-          command: ["sh", "-c"]
-          args:
-            - |
-              cp /usr/local/bin/docker /docker/docker
-          volumeMounts:
-            - name: docker-cli
-              mountPath: /docker
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
           ports:
             - containerPort: 8080
             - containerPort: 50000
-          resources:
-            limits:
-              memory: 4Gi
-              cpu: "2"
-            requests:
-              memory: 2Gi
-              cpu: "1"
-          env:
-            - name: JAVA_OPTS
-              value: -Xmx2g -Djava.awt.headless=true
-          readinessProbe:
-            httpGet:
-              path: "/login"
-              port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
           volumeMounts:
             - name: jenkins-data
               mountPath: /var/jenkins_home
-            - name: docker-sock
-              mountPath: /var/run/docker.sock
-            - name: docker-cli
-              mountPath: /usr/bin/docker
-              subPath: docker
-            - name: nodejs-bin
-              mountPath: /usr/local/bin/node
-              subPath: node
-            - name: nodejs-bin
-              mountPath: /usr/local/bin/npm
-              subPath: npm
+          securityContext:
+            runAsUser: 1000
+            fsGroup: 1000
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
             claimName: jenkins-pv-claim
-        - name: docker-sock
-          hostPath:
-            path: /var/run/docker.sock
-        - name: docker-cli
-          emptyDir: {}
-        - name: nodejs-bin
-          emptyDir: {}
