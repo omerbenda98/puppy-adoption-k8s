@@ -7,53 +7,48 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: jenkins-server
+      app: jenkins
   template:
     metadata:
       labels:
-        app: jenkins-server
+        app: jenkins
     spec:
-      serviceAccountName: jenkins
-      securityContext:
-        fsGroup: 1000
       initContainers:
-        - name: docker-installer
-          image: docker:dind
-          command: ["/bin/sh", "-c"]
+        - name: node-installer
+          image: node:20
+          command: ["sh", "-c"]
           args:
             - |
-              mkdir -p /docker-cli
-              cp $(which docker) /docker-cli/
-              chmod +x /docker-cli/docker
+              cp $(which node) /nodejs/node
+              cp $(which npm) /nodejs/npm
+          volumeMounts:
+            - name: nodejs-bin
+              mountPath: /nodejs
+        - name: docker-installer
+          image: docker:latest
+          command: ["sh", "-c"]
+          args:
+            - |
+              cp /usr/local/bin/docker /docker/docker
           volumeMounts:
             - name: docker-cli
-              mountPath: /docker-cli
+              mountPath: /docker
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
-          securityContext:
-            privileged: true
-            runAsUser: 0
+          ports:
+            - containerPort: 8080
+            - containerPort: 50000
           resources:
             limits:
-              memory: "2Gi"
-              cpu: "1000m"
+              memory: 4Gi
+              cpu: "2"
             requests:
-              memory: "500Mi"
-              cpu: "500m"
-          ports:
-            - name: httpport
-              containerPort: 8080
-            - name: jnlpport
-              containerPort: 50000
-          livenessProbe:
-            httpGet:
-              path: "/login"
-              port: 8080
-            initialDelaySeconds: 90
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 5
+              memory: 2Gi
+              cpu: "1"
+          env:
+            - name: JAVA_OPTS
+              value: -Xmx2g -Djava.awt.headless=true
           readinessProbe:
             httpGet:
               path: "/login"
@@ -70,6 +65,8 @@ spec:
             - name: docker-cli
               mountPath: /usr/bin/docker
               subPath: docker
+            - name: nodejs-bin
+              mountPath: /usr/local/bin
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
@@ -79,3 +76,7 @@ spec:
             path: /var/run/docker.sock
         - name: docker-cli
           emptyDir: {}
+        - name: nodejs-bin
+          emptyDir: {}
+      securityContext:
+        fsGroup: 1000

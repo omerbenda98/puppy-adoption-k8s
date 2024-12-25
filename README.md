@@ -103,7 +103,8 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 # Jenkins UI
 
-kubectl port-forward svc/jenkins-service -n jenkins 8090:8080
+local: kubectl port-forward svc/jenkins-service -n jenkins 8090:8080
+for aws: kubectl port-forward svc/jenkins-service -n jenkins 8090:8080 --address 0.0.0.0
 
 # Custom application (example)
 
