@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: puppy-adoption-ingress
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -13,10 +13,11 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
 spec:
   ingressClassName: nginx
-  # tls:
-  #   - hosts:
-  #       - puppyadoptions.duckdns.org
-  #     secretName: puppy-tls-secret
+  tls:
+    - hosts:
+        - puppyadoptions.duckdns.org
+        - staging.puppyadoptions.duckdns.org
+      secretName: puppy-tls-secret
   rules:
     - host: puppyadoptions.duckdns.org
       http:
@@ -35,8 +36,16 @@ spec:
                 name: frontend-service
                 port:
                   number: 3000
-    - http: # This is the catch-all rule
+    - host: staging.puppyadoptions.duckdns.org
+      http:
         paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 8181
           - path: /
             pathType: Prefix
             backend:

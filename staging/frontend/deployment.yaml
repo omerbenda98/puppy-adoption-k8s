@@ -16,15 +16,23 @@ spec:
       containers:
         - name: frontend
           image: omerbenda98/puppy-adoption-frontend:v1.30
-          imagePullPolicy: Always # Added for development
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
-          env: # Fixed env section
+          env:
             - name: NODE_ENV
-              value: "development"
+              value: "production" # Changed to production since it's staging
             - name: BACKEND_URL
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: BACKEND_URL
+                  key: API_URL
                   optional: true
+            - name: HOST
+              value: "staging.puppyadoptions.duckdns.org" # Updated for staging
+            - name: WDS_SOCKET_HOST
+              value: "staging.puppyadoptions.duckdns.org"
+            - name: KUBERNETES_SERVICE_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP

@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: backend-production
+  name: frontend-staging
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/omerbenda98/puppy-adoption-k8s.git
-    targetRevision: main
-    path: production/backend
+    targetRevision: staging
+    path: staging/frontend
   destination:
     server: https://kubernetes.default.svc
-    namespace: production
+    namespace: staging
   syncPolicy:
     automated:
       prune: true
