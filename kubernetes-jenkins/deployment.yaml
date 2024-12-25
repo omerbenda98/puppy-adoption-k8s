@@ -13,6 +13,8 @@ spec:
       labels:
         app: jenkins
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: jenkins
           image: jenkins/jenkins:lts
@@ -24,7 +26,6 @@ spec:
               mountPath: /var/jenkins_home
           securityContext:
             runAsUser: 1000
-            fsGroup: 1000
       volumes:
         - name: jenkins-data
           persistentVolumeClaim:
