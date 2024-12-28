@@ -29,9 +29,9 @@ spec:
                   key: API_URL
                   optional: true
             - name: HOST
-              value: "puppy-adoption.local" # Add this
+              value: "puppyadoptions.duckdns.org" # Add this
             - name: WDS_SOCKET_HOST
-              value: "puppy-adoption.local"
+              value: "puppyadoptions.duckdns.org"
             - name: KUBERNETES_SERVICE_HOST
               valueFrom:
                 fieldRef:
