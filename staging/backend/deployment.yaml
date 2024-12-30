@@ -12,6 +12,13 @@ spec:
       labels:
         app: backend
     spec:
+      spec:
+      dnsConfig:
+        options:
+          - name: timeout
+            value: "2"
+          - name: attempts
+            value: "5"
       containers:
         - name: backend
           image: omerbenda98/puppy-adoption-backend:v1.3
