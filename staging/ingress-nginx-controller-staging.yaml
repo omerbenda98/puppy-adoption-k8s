@@ -11,18 +11,13 @@ spec:
       port: 80
       protocol: TCP
       targetPort: http
-      nodePort: 32224 # For backend staging
+      nodePort: 32224
     - appProtocol: https
       name: https
       port: 443
       protocol: TCP
       targetPort: https
-      nodePort: 32223 # For frontend staging
-      - appProtocol: https
-      name: https-prod
-      port: 443
-      protocol: TCP
-      targetPort: https # For production HTTPS
+      nodePort: 32223
   selector:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: ingress-nginx
