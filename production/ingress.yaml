@@ -44,13 +44,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: backend-service
+                name: backend-service.staging.svc.cluster.local # Note the change here
                 port:
                   number: 8181
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: frontend-service
+                name: frontend-service.staging.svc.cluster.local # And here
                 port:
                   number: 3000
