@@ -1,10 +1,12 @@
+# staging/ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: puppy-adoption-ingress
+  name: staging-ingress
   namespace: staging
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
@@ -12,25 +14,24 @@ metadata:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      if ($server_port = 32223) {
+        set $target_namespace staging;
+      }
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - puppyadoptions.duckdns.org
-      secretName: puppy-tls-secret
   rules:
     - host: puppyadoptions.duckdns.org
       http:
         paths:
-          - path: /api
+          - path: /staging-api
             pathType: Prefix
             backend:
               service:
                 name: backend-service
                 port:
                   number: 8181
-          - path: /
+          - path: /staging
             pathType: Prefix
             backend:
               service:
