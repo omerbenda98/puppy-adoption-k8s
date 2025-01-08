@@ -6,4 +6,4 @@ metadata:
 data:
   NODE_ENV: "staging"
   REACT_APP_ENV: "staging"
-  API_URL: "http://staging.puppyadoptions.duckdns.org/api"
+  API_URL: "http://puppyadoptions.duckdns.org:32223/api"
