@@ -10,23 +10,18 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - appProtocol: http
-      name: http
+    - name: http
       port: 80
-      protocol: TCP
-      targetPort: http
-      nodePort: 32222 # Production HTTP
-    - appProtocol: https
-      name: https-staging
+      targetPort: 80
+      nodePort: 32222
+    - name: https
       port: 443
-      protocol: TCP
-      targetPort: https
-      nodePort: 32223 # Staging HTTPS
-    - appProtocol: https
-      name: https-prod
-      port: 443
-      protocol: TCP
-      targetPort: https # Production HTTPS
+      targetPort: 443
+      nodePort: 31240 # Different port for HTTPS production
+    - name: http-staging
+      port: 80
+      targetPort: 80
+      nodePort: 32223 # Staging port
   selector:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: ingress-nginx
