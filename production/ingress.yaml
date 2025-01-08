@@ -14,7 +14,6 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/proxy-next-upstream: "error timeout http_502"
     nginx.ingress.kubernetes.io/proxy-next-upstream-tries: "3"
-    # Add these for better connection handling
     nginx.ingress.kubernetes.io/proxy-buffer-size: "8k"
     nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
 spec:
@@ -41,20 +40,3 @@ spec:
                 name: frontend-service
                 port:
                   number: 3000
-    # - host: staging.puppyadoptions.duckdns.org
-    #   http:
-    #     paths:
-    #       - path: /api
-    #         pathType: Prefix
-    #         backend:
-    #           service:
-    #             name: backend-service # Name remains the same
-    #             port:
-    #               number: 8181
-    #       - path: /
-    #         pathType: Prefix
-    #         backend:
-    #           service:
-    #             name: frontend-service # Name remains the same
-    #             port:
-    #               number: 3000
