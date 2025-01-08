@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+spec:
+  type: NodePort
+  ports:
+    - appProtocol: http
+      name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+      nodePort: 32222 # Production HTTP
+    - appProtocol: https
+      name: https-staging
+      port: 443
+      protocol: TCP
+      targetPort: https
+      nodePort: 32223 # Staging HTTPS
+    - appProtocol: https
+      name: https-prod
+      port: 443
+      protocol: TCP
+      targetPort: https # Production HTTPS
+  selector:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
