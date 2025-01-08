@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: staging-ingress
+  name: staging-ingress # Changed name to avoid conflicts
   namespace: staging
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
@@ -14,10 +14,6 @@ metadata:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      if ($server_port = 32223) {
-        set $target_namespace staging;
-      }
 spec:
   ingressClassName: nginx
   rules:
