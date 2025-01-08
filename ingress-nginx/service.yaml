@@ -1,3 +1,4 @@
+# ingress-nginx/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,16 +13,14 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: 80
+      protocol: TCP
+      targetPort: http
       nodePort: 32222
     - name: https
       port: 443
-      targetPort: 443
-      nodePort: 31240 # Different port for HTTPS production
-    - name: http-staging
-      port: 80
-      targetPort: 80
-      nodePort: 32223 # Staging port
+      protocol: TCP
+      targetPort: https
+      nodePort: 31240
   selector:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: ingress-nginx
