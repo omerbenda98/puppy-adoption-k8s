@@ -20,6 +20,8 @@ spec:
           ports:
             - containerPort: 3000
           env:
+            - name: PUBLIC_URL
+              value: "/staging"
             - name: NODE_ENV
               value: "production" # Changed to production since it's staging
             - name: BACKEND_URL
