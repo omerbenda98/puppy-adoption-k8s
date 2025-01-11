@@ -4,9 +4,10 @@ metadata:
   name: frontend-service
   namespace: staging
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 3000
       targetPort: 3000
+      nodePort: 32223 # Explicitly set the NodePort
   selector:
     app: frontend
