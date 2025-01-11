@@ -15,7 +15,7 @@ spec:
     - host: puppyadoptions.duckdns.org
       http:
         paths:
-          - path: /
+          - path: /staging
             pathType: Prefix
             backend:
               service:
