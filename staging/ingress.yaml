@@ -15,13 +15,14 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2 # Add this to strip the prefix
 spec:
   ingressClassName: nginx
   rules:
     - host: puppyadoptions.duckdns.org
       http:
         paths:
-          - path: /
+          - path: /staging(/|$)(.*) # Changed path to avoid conflict
             pathType: Prefix
             backend:
               service:
