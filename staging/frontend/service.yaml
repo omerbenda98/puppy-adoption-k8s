@@ -1,4 +1,3 @@
-Copy# staging/frontend/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,6 +8,6 @@ spec:
   ports:
     - port: 3000
       targetPort: 3000
-      nodePort: 32223  # Add this line to explicitly set the NodePort
+      nodePort: 32223 # Add this line to explicitly set the NodePort
   selector:
     app: frontend
