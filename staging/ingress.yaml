@@ -21,14 +21,14 @@ spec:
     - host: puppyadoptions.duckdns.org
       http:
         paths:
-          - path: /staging-api
+          - path: /api
             pathType: Prefix
             backend:
               service:
                 name: backend-service
                 port:
                   number: 8181
-          - path: /staging
+          - path: /
             pathType: Prefix
             backend:
               service:

@@ -1,12 +1,14 @@
-# development/frontend/service.yaml
+Copy# staging/frontend/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
+  namespace: staging
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
-    - port: 3000 # Added hyphen for array item
+    - port: 3000
       targetPort: 3000
+      nodePort: 32223  # Add this line to explicitly set the NodePort
   selector:
     app: frontend
