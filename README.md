@@ -1,17 +1,13 @@
-Kubernetes/Minikube Command Reference
-Starting Minikube
-bashCopy# Start Minikube cluster
-minikube start
-
-# Verify cluster status
-
-minikube status
-
-# Enable required addons
-
-minikube addons enable ingress
-minikube addons enable metrics-server
-
+```mermaid
+flowchart TD
+    subgraph AWS["AWS Ubuntu VM"]
+        MK[Minikube Cluster]
+        subgraph Environments
+            PROD[Production Namespace]
+            STAGE[Staging Namespace]
+        end
+        ...
+```
 # Namespace Management
 
 kubectl get namespaces
