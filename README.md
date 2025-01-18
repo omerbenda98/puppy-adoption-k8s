@@ -1,12 +1,26 @@
 ```mermaid
 flowchart TD
-    subgraph AWS["AWS Ubuntu VM"]
+    subgraph AWS[AWS Ubuntu VM]
         MK[Minikube Cluster]
-        subgraph Environments
+        subgraph ENV[Environments]
             PROD[Production Namespace]
             STAGE[Staging Namespace]
         end
-        ...
+        subgraph CICD[CI/CD]
+            JK[Jenkins]
+            ARGO[ArgoCD]
+        end
+        subgraph APPS[Applications]
+            FE[Frontend Service]
+            BE[Backend Service]
+        end
+    end
+    
+    GH[GitHub Repository] --> JK
+    JK --> ARGO
+    ARGO --> MK
+    MK --- ENV
+    ENV --- APPS
 ```
 # Namespace Management
 
