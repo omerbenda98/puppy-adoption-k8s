@@ -22,6 +22,60 @@ flowchart TD
     MK --- ENV
     ENV --- APPS
 ```
+```mermaid
+flowchart TD
+    subgraph CLUSTER[Minikube Cluster on AWS VM]
+        ING[NGINX Ingress Controller<br>NodePort: 32222:80, 31240:443]
+        
+        subgraph PROD[Production Namespace]
+            P_ING[Production Ingress<br>Host: puppyadoptions.duckdns.org<br>TLS Enabled]
+            P_FE[Frontend Service<br>Port: 3000]
+            P_BE[Backend Service<br>Port: 8181]
+        end
+        
+        subgraph STAGE[Staging Namespace]
+            S_ING[Staging Ingress<br>Host: puppyadoptions.duckdns.org:32223]
+            S_FE[Frontend Service<br>Port: 3000]
+            S_BE[Backend Service<br>Port: 8181]
+        end
+        
+        subgraph TOOLS[DevOps Tools Namespace]
+            JK[Jenkins<br>Service Type: ClusterIP]
+            ARGO[ArgoCD<br>Service Type: ClusterIP]
+        end
+
+        subgraph SYS[System Namespace: kube-system]
+            DNS[CoreDNS]
+            METRICS[Metrics Server]
+        end
+    end
+    
+    USER[External Users] --> ING
+    ING --> P_ING
+    ING --> S_ING
+    
+    P_ING -->|Path: /| P_FE
+    P_ING -->|Path: /api| P_BE
+    S_ING -->|Path: /staging| S_FE
+    S_ING -->|Path: /api| S_BE
+
+    P_FE <-->|Internal| P_BE
+    S_FE <-->|Internal| S_BE
+
+    style CLUSTER fill:#326CE5,stroke:#fff,color:#fff
+    style PROD fill:#7A956B,stroke:#fff,color:#fff
+    style STAGE fill:#7A956B,stroke:#fff,color:#fff
+    style TOOLS fill:#7A956B,stroke:#fff,color:#fff
+    style SYS fill:#7A956B,stroke:#fff,color:#fff
+    style ING fill:#009639,stroke:#fff,color:#fff
+    style USER fill:#f9f9f9,stroke:#333
+    
+    classDef ingress fill:#FF9900,stroke:#fff,color:#fff
+    classDef service fill:#326CE5,stroke:#fff,color:#fff
+    
+    class P_ING,S_ING ingress
+    class P_FE,P_BE,S_FE,S_BE,JK,ARGO,DNS,METRICS service
+```
 # Namespace Management
 
 kubectl get namespaces
