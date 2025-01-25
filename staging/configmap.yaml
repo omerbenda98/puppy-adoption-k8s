@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: app-config
-  namespace: staging
-data:
-  NODE_ENV: "staging"
-  REACT_APP_ENV: "staging"
-  API_URL: "http://puppyadoptions.duckdns.org:32223/api" # Updated API URL
