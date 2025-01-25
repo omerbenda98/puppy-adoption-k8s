@@ -1,0 +1,145 @@
+---
+- name: Setup Minikube Environment
+  hosts: aws_vm
+  become: yes
+  tasks:
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+        state: present
+
+    - name: Download kubectl
+      get_url:
+        url: https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl
+        dest: /usr/local/bin/kubectl
+        mode: "0755"
+
+    - name: Install dependencies
+      apt:
+        name:
+          - docker.io
+          - nginx
+          - git
+        state: present
+
+    - name: Download Minikube
+      get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
+        mode: "0755"
+
+    - name: Configure Minikube
+      command: minikube config set {{ item.key }} {{ item.value }}
+      loop:
+        - { key: driver, value: docker }
+        - { key: kubernetes-version, value: v1.29.0 }
+        - { key: memory, value: 6144 }
+        - { key: cpus, value: 2 }
+
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Start docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Wait for docker service
+      pause:
+        seconds: 10
+
+    - name: Start Minikube
+      command: minikube start
+      become_user: ubuntu
+
+    - name: Enable Minikube addons
+      command: minikube addons enable {{ item }}
+      become_user: ubuntu
+      loop:
+        - ingress
+        - metrics-server
+        - default-storageclass
+
+    - name: Create all namespaces
+      command: kubectl create namespace {{ item }}
+      become_user: ubuntu
+      loop:
+        - argocd
+        - jenkins
+        - staging
+        - production
+      ignore_errors: yes
+
+    - name: Install & Deploy ArgoCD
+      command: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      become_user: ubuntu
+
+    - name: Clone K8s repository
+      git:
+        repo: "https://github.com/omerbenda98/puppy-adoption-k8s.git" # Replace with your actual repo URL
+        dest: /home/ubuntu/puppy-adoptions-k8s
+        version: main # Or your desired branch
+      become_user: ubuntu
+
+    - name: Create directory for Jenkins data
+      file:
+        path: /data/jenkins-volume
+        state: directory
+        mode: "0755"
+      become: yes
+
+    - name: Apply Jenkins configurations
+      command: kubectl apply -f {{ item }}
+      become_user: ubuntu
+      loop:
+        - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/serviceAccount.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/volume.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/deployment.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/service.yaml
+
+    - name: Wait for Jenkins pod to be ready
+      command: kubectl wait --for=condition=Ready pods -l app=jenkins-server -n jenkins --timeout=300s
+      become_user: ubuntu
+
+    - name: Deploy Production Environment
+      command: kubectl apply -f {{ item }}
+      become_user: ubuntu
+      loop:
+        - /home/ubuntu/puppy-adoptions-k8s/production/backend/deployment.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/production/backend/service.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/production/frontend/deployment.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/production/frontend/service.yaml
+
+    - name: Deploy Staging Environment
+      command: kubectl apply -f {{ item }}
+      become_user: ubuntu
+      loop:
+        - /home/ubuntu/puppy-adoptions-k8s/staging/backend/deployment.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/staging/backend/service.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/staging/frontend/deployment.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/staging/frontend/service.yaml
+
+    - name: Wait for Production pods to be ready
+      command: kubectl wait --for=condition=Ready pods -l app={{ item }} -n production --timeout=300s
+      become_user: ubuntu
+      loop:
+        - backend
+        - frontend
+
+    - name: Wait for Staging pods to be ready
+      command: kubectl wait --for=condition=Ready pods -l app={{ item }} -n staging --timeout=300s
+      become_user: ubuntu
+      loop:
+        - backend
+        - frontend
+# need to deploy jenkins
+# need to deploy pods into production and staging namespaces

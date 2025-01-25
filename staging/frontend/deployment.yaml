@@ -1,0 +1,38 @@
+# development/frontend/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: omerbenda98/puppy-adoption-frontend:staging.v1.10
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production" # Changed to production since it's staging
+            - name: BACKEND_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: API_URL
+                  optional: true
+            - name: HOST
+              value: "puppyadoptions.duckdns.org" # Updated for staging
+            - name: WDS_SOCKET_HOST
+              value: "puppyadoptions.duckdns.org"
+            - name: KUBERNETES_SERVICE_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
