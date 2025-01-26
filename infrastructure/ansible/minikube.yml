@@ -54,6 +54,7 @@
         method: GET
         return_content: yes
       register: duckdns_update
+      failed_when: "'OK' not in duckdns_update.content"
       tags: duckdns
 
     - name: Add ubuntu user to docker group
@@ -105,11 +106,15 @@
       command: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
       become_user: ubuntu
 
+    # - name: Wait for ArgoCD to be ready
+    #   command: kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
+    #   become_user: ubuntu
+
     - name: Clone K8s repository
       git:
-        repo: "https://github.com/omerbenda98/puppy-adoption-k8s.git" # Replace with your actual repo URL
+        repo: "https://github.com/omerbenda98/puppy-adoption-k8s.git"
         dest: /home/ubuntu/puppy-adoptions-k8s
-        version: main # Or your desired branch
+        version: main
       become_user: ubuntu
 
     - name: Create directory for Jenkins data
