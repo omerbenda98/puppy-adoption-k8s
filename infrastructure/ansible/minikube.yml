@@ -47,6 +47,9 @@
         groups: docker
         append: yes
 
+    - name: Reconnect to apply group changes
+      meta: reset_connection
+
     - name: Start docker service
       service:
         name: docker
@@ -117,6 +120,44 @@
     - name: Apply MongoDB Secret Staging
       command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/staging/secrets/mongodb-secret.yaml -n staging
       become_user: ubuntu
+
+    - name: Apply Production ConfigMap and Ingress
+      command: kubectl apply -f {{ item }} -n production
+      become_user: ubuntu
+      loop:
+        - /home/ubuntu/puppy-adoptions-k8s/production/configmap.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/production/ingress.yaml
+
+    - name: Apply Staging ConfigMap and Ingress
+      command: kubectl apply -f {{ item }} -n staging
+      become_user: ubuntu
+      loop:
+        - /home/ubuntu/puppy-adoptions-k8s/staging/configmap.yaml
+        - /home/ubuntu/puppy-adoptions-k8s/staging/ingress.yaml
+
+    - name: Create nginx proxy configuration for Minikube
+      template:
+        src: minikube-proxy.conf
+        dest: /etc/nginx/sites-available/minikube-proxy.conf
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Enable nginx proxy configuration
+      file:
+        src: /etc/nginx/sites-available/minikube-proxy.conf
+        dest: /etc/nginx/sites-enabled/minikube-proxy.conf
+        state: link
+
+    - name: Remove default nginx site configuration
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
 
     - name: Deploy Production Environment
       command: kubectl apply -f {{ item }}
