@@ -5,9 +5,10 @@ metadata:
   name: backend-service
   namespace: production
 spec:
-  type: ClusterIP # Change from NodePort to ClusterIP
+  type: NodePort # Change from NodePort to ClusterIP
   ports:
     - port: 8181
       targetPort: 8181
+      nodePort: 31241
   selector:
     app: backend

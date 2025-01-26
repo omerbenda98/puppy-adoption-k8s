@@ -128,9 +128,9 @@
         - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/deployment.yaml
         - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/service.yaml
 
-    - name: Wait for Jenkins pod to be ready
-      command: kubectl wait --for=condition=Ready pods -l app=jenkins-server -n jenkins --timeout=300s
-      become_user: ubuntu
+    # - name: Wait for Jenkins pod to be ready
+    #   command: kubectl wait --for=condition=Ready pods -l app=jenkins-server -n jenkins --timeout=300s
+    #   become_user: ubuntu
 
     - name: Apply MongoDB Secret Production
       command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/production/secrets/mongodb-secret.yaml -n production

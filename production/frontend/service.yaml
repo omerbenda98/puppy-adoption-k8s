@@ -5,9 +5,10 @@ metadata:
   name: frontend-service
   namespace: production
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 3000 # Added hyphen for array item
       targetPort: 3000
+      nodePort: 31240
   selector:
     app: frontend
