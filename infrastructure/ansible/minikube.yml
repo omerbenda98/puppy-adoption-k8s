@@ -110,6 +110,14 @@
       command: kubectl wait --for=condition=Ready pods -l app=jenkins-server -n jenkins --timeout=300s
       become_user: ubuntu
 
+    - name: Apply MongoDB Secret Production
+      command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/production/secrets/mongodb-secret.yaml -n production
+      become_user: ubuntu
+
+    - name: Apply MongoDB Secret Staging
+      command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/staging/secrets/mongodb-secret.yaml -n staging
+      become_user: ubuntu
+
     - name: Deploy Production Environment
       command: kubectl apply -f {{ item }}
       become_user: ubuntu

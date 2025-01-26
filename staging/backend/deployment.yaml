@@ -13,7 +13,6 @@ spec:
       labels:
         app: backend
     spec:
-      spec:
       dnsConfig:
         options:
           - name: timeout
