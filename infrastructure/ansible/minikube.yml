@@ -136,28 +136,33 @@
         - /home/ubuntu/puppy-adoptions-k8s/staging/ingress.yaml
 
     - name: Create nginx proxy configuration for Minikube
-      template:
-        src: minikube-proxy.conf
+      copy:
+        src: /home/ubuntu/puppy-adoptions-k8s/infrastructure/ansible/templates/minikube-proxy.conf
         dest: /etc/nginx/sites-available/minikube-proxy.conf
         owner: root
         group: root
         mode: "0644"
+        remote_src: yes
+      tags: nginx
 
     - name: Enable nginx proxy configuration
       file:
         src: /etc/nginx/sites-available/minikube-proxy.conf
         dest: /etc/nginx/sites-enabled/minikube-proxy.conf
         state: link
+      tags: nginx
 
     - name: Remove default nginx site configuration
       file:
         path: /etc/nginx/sites-enabled/default
         state: absent
+      tags: nginx
 
     - name: Restart nginx
       service:
         name: nginx
         state: restarted
+      tags: nginx
 
     - name: Deploy Production Environment
       command: kubectl apply -f {{ item }}
