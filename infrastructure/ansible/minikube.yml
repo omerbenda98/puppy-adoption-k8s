@@ -41,6 +41,21 @@
         - { key: memory, value: 6144 }
         - { key: cpus, value: 2 }
 
+    - name: Get public IP of the VM
+      uri:
+        url: http://checkip.amazonaws.com/
+        return_content: yes
+      register: public_ip
+      tags: duckdns
+
+    - name: Update DuckDNS record for dev environment
+      uri:
+        url: "https://www.duckdns.org/update?domains=puppies-adopt&token=6dcc1d30-6c5d-4c20-a036-5c590e18c696&ip={{ public_ip.content | trim }}"
+        method: GET
+        return_content: yes
+      register: duckdns_update
+      tags: duckdns
+
     - name: Add ubuntu user to docker group
       user:
         name: ubuntu
@@ -71,6 +86,10 @@
         - ingress
         - metrics-server
         - default-storageclass
+
+    - name: Apply custom ingress-nginx service configuration
+      command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/infrastructure/ingress-nginx/service.yaml -n ingress-nginx
+      become_user: ubuntu
 
     - name: Create all namespaces
       command: kubectl create namespace {{ item }}

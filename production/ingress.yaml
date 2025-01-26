@@ -20,12 +20,14 @@ metadata:
 spec:
   ingressClassName: nginx
   tls:
-    - hosts:
-        - puppyadoptions.duckdns.org
-      secretName: puppy-tls-secret
+     - hosts:
+    #     - puppyadoptions.duckdns.org
+         - puppies-adopt.duckdns.org
+    - secretName: puppy-tls-secret
   rules:
-    - host: puppyadoptions.duckdns.org
-      http:
+    # - host: puppyadoptions.duckdns.org
+     - host: puppies-adopt.duckdns.org
+    - http:
         paths:
           - path: /api
             pathType: Prefix
