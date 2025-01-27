@@ -1,4 +1,11 @@
 ---
+- name: Clone K8s repository
+  git:
+    repo: "https://github.com/omerbenda98/puppy-adoption-k8s.git"
+    dest: /home/ubuntu/puppy-adoptions-k8s
+    version: main
+  become_user: ubuntu
+
 - name: Create all namespaces
   command: kubectl create namespace {{ item }}
   become_user: ubuntu

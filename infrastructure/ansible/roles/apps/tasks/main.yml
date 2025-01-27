@@ -1,11 +1,4 @@
 ---
-- name: Clone K8s repository
-  git:
-    repo: "https://github.com/omerbenda98/puppy-adoption-k8s.git"
-    dest: /home/ubuntu/puppy-adoptions-k8s
-    version: main
-  become_user: ubuntu
-
 - name: Install ArgoCD base installation
   command: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
   become_user: ubuntu
