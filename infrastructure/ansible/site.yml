@@ -6,7 +6,7 @@
     - base
     - minikube
     - kubernetes
-    - apps
+    - { role: apps, tags: ["argocd"] }
     - networking
 # ---
 # - name: Setup Minikube Environment

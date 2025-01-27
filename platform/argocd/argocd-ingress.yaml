@@ -13,7 +13,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: 44.207.146.138 # Replace with your Elastic IP
+    - host: puppies-adopt.duckdns.org
       http:
         paths:
           - path: /

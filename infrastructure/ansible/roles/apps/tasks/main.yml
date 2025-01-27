@@ -4,8 +4,9 @@
   become_user: ubuntu
 
 - name: Apply ArgoCD ingress
-  command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/infrastructure/argocd/argocd-ingress.yaml
+  command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/platform/argocd/argocd-ingress.yaml
   become_user: ubuntu
+  tags: argocd
 
 - name: Apply ArgoCD applications
   command: kubectl apply -f {{ item }}
@@ -15,10 +16,12 @@
     - /home/ubuntu/puppy-adoptions-k8s/platform/argocd/frontend/staging-app.yaml
     - /home/ubuntu/puppy-adoptions-k8s/platform/argocd/backend/backend-prod.yaml
     - /home/ubuntu/puppy-adoptions-k8s/platform/argocd/backend/backend-dev.yaml
+  tags: argocd
 
 - name: Wait for ArgoCD to be ready
   command: kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
   become_user: ubuntu
+  tags: argocd
 
 - name: Create directory for Jenkins data
   file:
