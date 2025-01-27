@@ -1,0 +1,22 @@
+---
+- name: Create all namespaces
+  command: kubectl create namespace {{ item }}
+  become_user: ubuntu
+  loop:
+    - argocd
+    - jenkins
+    - staging
+    - production
+  ignore_errors: yes
+
+- name: Enable Minikube addons
+  command: minikube addons enable {{ item }}
+  become_user: ubuntu
+  loop:
+    - ingress
+    - metrics-server
+    - default-storageclass
+
+- name: Apply custom ingress-nginx service configuration
+  command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/infrastructure/ingress-nginx/service.yaml -n ingress-nginx
+  become_user: ubuntu

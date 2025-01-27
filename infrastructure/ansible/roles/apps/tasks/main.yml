@@ -1,0 +1,127 @@
+---
+- name: Clone K8s repository
+  git:
+    repo: "https://github.com/omerbenda98/puppy-adoption-k8s.git"
+    dest: /home/ubuntu/puppy-adoptions-k8s
+    version: main
+  become_user: ubuntu
+
+- name: Install ArgoCD base installation
+  command: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+  become_user: ubuntu
+
+- name: Apply ArgoCD ingress
+  command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/infrastructure/argocd/argocd-ingress.yaml
+  become_user: ubuntu
+
+- name: Apply ArgoCD applications
+  command: kubectl apply -f {{ item }}
+  become_user: ubuntu
+  loop:
+    - /home/ubuntu/puppy-adoptions-k8s/platform/argocd/frontend/production-app.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/platform/argocd/frontend/staging-app.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/platform/argocd/backend/backend-prod.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/platform/argocd/backend/backend-dev.yaml
+
+- name: Wait for ArgoCD to be ready
+  command: kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
+  become_user: ubuntu
+
+- name: Create directory for Jenkins data
+  file:
+    path: /data/jenkins-volume
+    state: directory
+    mode: "0755"
+
+- name: Apply Jenkins configurations
+  command: kubectl apply -f {{ item }}
+  become_user: ubuntu
+  loop:
+    - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/serviceAccount.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/volume.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/deployment.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/platform/jenkins/service.yaml
+
+- name: Wait for Jenkins pod to be ready
+  command: kubectl wait --for=condition=Ready pods -l app=jenkins-server -n jenkins --timeout=300s
+  become_user: ubuntu
+
+- name: Start ArgoCD port-forward in background
+  shell: |
+    nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 > /dev/null 2>&1 &
+  become_user: ubuntu
+  async: 45
+  poll: 0
+
+- name: Start Jenkins port-forward in background
+  shell: |
+    nohup kubectl port-forward svc/jenkins-service -n jenkins 8081:8080 > /dev/null 2>&1 &
+  become_user: ubuntu
+  async: 45
+  poll: 0
+
+- name: Get initial ArgoCD admin password
+  shell: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+  register: argocd_password
+  become_user: ubuntu
+
+- name: Display ArgoCD credentials
+  debug:
+    msg:
+      - "ArgoCD is available at localhost:8080"
+      - "Username: admin"
+      - "Password: {{ argocd_password.stdout }}"
+
+- name: Apply MongoDB Secret Production
+  command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/production/secrets/mongodb-secret.yaml -n production
+  become_user: ubuntu
+
+- name: Apply MongoDB Secret Staging
+  command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/staging/secrets/mongodb-secret.yaml -n staging
+  become_user: ubuntu
+
+- name: Apply Production ConfigMap and Ingress
+  command: kubectl apply -f {{ item }} -n production
+  become_user: ubuntu
+  loop:
+    - /home/ubuntu/puppy-adoptions-k8s/production/configmap.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/production/ingress.yaml
+
+- name: Apply Staging ConfigMap and Ingress
+  command: kubectl apply -f {{ item }} -n staging
+  become_user: ubuntu
+  loop:
+    - /home/ubuntu/puppy-adoptions-k8s/staging/configmap.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/staging/ingress.yaml
+
+- name: Deploy Production Environment
+  command: kubectl apply -f {{ item }}
+  become_user: ubuntu
+  loop:
+    - /home/ubuntu/puppy-adoptions-k8s/production/backend/deployment.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/production/backend/service.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/production/frontend/deployment.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/production/frontend/service.yaml
+
+- name: Deploy Staging Environment
+  command: kubectl apply -f {{ item }}
+  become_user: ubuntu
+  loop:
+    - /home/ubuntu/puppy-adoptions-k8s/staging/backend/deployment.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/staging/backend/service.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/staging/frontend/deployment.yaml
+    - /home/ubuntu/puppy-adoptions-k8s/staging/frontend/service.yaml
+
+- name: Wait for Production pods to be ready
+  command: kubectl wait --for=condition=Ready pods -l app={{ item }} -n production --timeout=300s
+  become_user: ubuntu
+  loop:
+    - backend
+    - frontend
+
+- name: Wait for Staging pods to be ready
+  command: kubectl wait --for=condition=Ready pods -l app={{ item }} -n staging --timeout=300s
+  become_user: ubuntu
+  loop:
+    - backend
+    - frontend

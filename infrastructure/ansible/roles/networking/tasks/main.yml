@@ -1,0 +1,45 @@
+---
+- name: Get public IP of the VM
+  uri:
+    url: http://checkip.amazonaws.com/
+    return_content: yes
+  register: public_ip
+  tags: duckdns
+
+- name: Update DuckDNS record for dev environment
+  uri:
+    url: "https://www.duckdns.org/update?domains=puppies-adopt&token=6dcc1d30-6c5d-4c20-a036-5c590e18c696&ip={{ public_ip.content | trim }}"
+    method: GET
+    return_content: yes
+  register: duckdns_update
+  failed_when: "'OK' not in duckdns_update.content"
+  tags: duckdns
+
+- name: Create nginx proxy configuration for Minikube
+  copy:
+    src: /home/ubuntu/puppy-adoptions-k8s/infrastructure/ansible/templates/minikube-proxy.conf
+    dest: /etc/nginx/sites-available/minikube-proxy.conf
+    owner: root
+    group: root
+    mode: "0644"
+    remote_src: yes
+  tags: nginx
+
+- name: Enable nginx proxy configuration
+  file:
+    src: /etc/nginx/sites-available/minikube-proxy.conf
+    dest: /etc/nginx/sites-enabled/minikube-proxy.conf
+    state: link
+  tags: nginx
+
+- name: Remove default nginx site configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  tags: nginx
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+  tags: nginx
