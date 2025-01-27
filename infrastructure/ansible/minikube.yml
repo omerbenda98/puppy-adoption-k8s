@@ -80,18 +80,6 @@
       command: minikube start
       become_user: ubuntu
 
-    - name: Enable Minikube addons
-      command: minikube addons enable {{ item }}
-      become_user: ubuntu
-      loop:
-        - ingress
-        - metrics-server
-        - default-storageclass
-
-    - name: Apply custom ingress-nginx service configuration
-      command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/infrastructure/ingress-nginx/service.yaml -n ingress-nginx
-      become_user: ubuntu
-
     - name: Create all namespaces
       command: kubectl create namespace {{ item }}
       become_user: ubuntu
@@ -102,6 +90,13 @@
         - production
       ignore_errors: yes
 
+    - name: Clone K8s repository
+      git:
+        repo: "https://github.com/omerbenda98/puppy-adoption-k8s.git"
+        dest: /home/ubuntu/puppy-adoptions-k8s
+        version: main
+      become_user: ubuntu
+
     - name: Install & Deploy ArgoCD
       command: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
       become_user: ubuntu
@@ -110,11 +105,16 @@
     #   command: kubectl wait --for=condition=Ready pods -l app.kubernetes.io/name=argocd-server -n argocd --timeout=300s
     #   become_user: ubuntu
 
-    - name: Clone K8s repository
-      git:
-        repo: "https://github.com/omerbenda98/puppy-adoption-k8s.git"
-        dest: /home/ubuntu/puppy-adoptions-k8s
-        version: main
+    - name: Enable Minikube addons
+      command: minikube addons enable {{ item }}
+      become_user: ubuntu
+      loop:
+        - ingress
+        - metrics-server
+        - default-storageclass
+
+    - name: Apply custom ingress-nginx service configuration
+      command: kubectl apply -f /home/ubuntu/puppy-adoptions-k8s/infrastructure/ingress-nginx/service.yaml -n ingress-nginx
       become_user: ubuntu
 
     - name: Create directory for Jenkins data
