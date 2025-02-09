@@ -17,15 +17,15 @@ Before you begin, ensure you have the following:
 
 - AWS Access Key and Secret Key
 - SSH Key Pair (`mykey.pem` - **not included** in repository)
-- Inventory file (template provided, needs to be configured)
+- inventory file
 - Security group ID in AWS (current: `sg-0fe1c471d9c194bd4`)
 
 ## 🚦 Initial Setup
 
 1. Clone this repository:
    ```bash
-   git clone <repository-url>
-   cd <repository-name>
+   git clone https://github.com/omerbenda98/puppy-adoption-k8s.git
+   cd puppy-adoption-k8s/ansible
    ```
 
 # AWS Deployment Setup
@@ -49,10 +49,13 @@ Enter your AWS access key, secret key, and preferred region when prompted.
 ## Create Inventory File
 
 ```bash
-cp inventory.template inventory
+nano inventory
 ```
 
-**Note:** The script will automatically update the inventory file with the new instance IP.
+with the following content:
+[aws_vm]
+
+**Note:** This will create the inventory file needed
 
 ## Usage
 
