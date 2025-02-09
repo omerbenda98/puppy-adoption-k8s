@@ -1,29 +1,32 @@
-# Infrastructure as Code with Terraform and Ansible
+# 🚀 Infrastructure as Code with Terraform and Ansible
 
-This repository contains automation scripts to deploy and configure an AWS EC2 instance with Minikube, running a web application with ArgoCD, Jenkins, and separate staging/production namespaces.
+> This repository contains automation scripts to deploy and configure an AWS EC2 instance with Minikube, running a web application with ArgoCD, Jenkins, and separate staging/production namespaces.
 
-# Prerequisites
+## ✨ Prerequisites
 
 Before you begin, ensure you have the following:
-Required Software
 
-Terraform (Install using sudo snap install terraform --classic)
-Ansible (Install using sudo apt install ansible)
-AWS CLI (Install using sudo apt install awscli2 or sudo snap install aws-cli --classic)
-WSL (Windows Subsystem for Linux) if running on Windows
+### 🛠️ Required Software
 
-# Required Credentials and Files
+- Terraform (`sudo snap install terraform --classic`)
+- Ansible (`sudo apt install ansible`)
+- AWS CLI (`sudo apt install awscli2` or `sudo snap install aws-cli --classic`)
+- WSL (Windows Subsystem for Linux) if running on Windows
 
-AWS Access Key and Secret Key
-SSH Key Pair (mykey.pem - not included in repository)
-Inventory file (template provided, needs to be configured)
-Security group ID in AWS (current: sg-0fe1c471d9c194bd4)
+### 🔑 Required Credentials and Files
 
-# Initial Setup
+- AWS Access Key and Secret Key
+- SSH Key Pair (`mykey.pem` - **not included** in repository)
+- Inventory file (template provided, needs to be configured)
+- Security group ID in AWS (current: `sg-0fe1c471d9c194bd4`)
 
-Clone this repository:
-bashCopygit clone <repository-url>
-cd <repository-name>
+## 🚦 Initial Setup
+
+1. Clone this repository:
+   ```bash
+   git clone <repository-url>
+   cd <repository-name>
+   ```
 
 # Configure AWS credentials:
 
