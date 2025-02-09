@@ -25,7 +25,6 @@ Before you begin, ensure you have the following:
 1. Clone this repository:
    ```bash
    git clone https://github.com/omerbenda98/puppy-adoption-k8s.git
-   cd puppy-adoption-k8s/ansible
    ```
 
 # AWS Deployment Setup
@@ -49,13 +48,11 @@ Enter your AWS access key, secret key, and preferred region when prompted.
 ## Create Inventory File
 
 ```bash
-nano inventory
+cd puppy-adoption-k8s/infrastructure/ansible
+touch inventory
 ```
 
-with the following content:
-[aws_vm]
-
-**Note:** This will create the inventory file needed
+**Note:** This will create the empty inventory file needed
 
 ## Usage
 
