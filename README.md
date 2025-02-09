@@ -28,36 +28,52 @@ Before you begin, ensure you have the following:
    cd <repository-name>
    ```
 
-# Configure AWS credentials:
+# AWS Deployment Setup
 
-bashCopyaws configure
+## Configure AWS Credentials
+
+```bash
+aws configure
+```
+
 Enter your AWS access key, secret key, and preferred region when prompted.
-Set up SSH key:
 
-Place your mykey.pem file in the project root directory
-Set correct permissions:
-bashCopychmod 400 mykey.pem
+## Set Up SSH Key
 
-Create inventory file:
-bashCopycp inventory.template inventory
-Note: The script will automatically update the inventory file with the new instance IP.
+1. Place your `mykey.pem` file in the project root directory.
+2. Set correct permissions:
+   ```bash
+   chmod 400 mykey.pem
+   ```
 
-# Usage
+## Create Inventory File
 
-Review and modify configurations if needed:
+```bash
+cp inventory.template inventory
+```
 
-Update security group ID in main.tf if necessary
-Adjust instance type or region in main.tf
-Modify Ansible playbook (site.yaml) for different configurations
+**Note:** The script will automatically update the inventory file with the new instance IP.
 
-Run the deployment script:
-bashCopy./terraform-ansible.sh
+## Usage
+
+### Review and Modify Configurations if Needed:
+
+- Update security group ID in `main.tf` if necessary.
+- Adjust instance type or region in `main.tf`.
+- Modify the Ansible playbook (`site.yaml`) for different configurations.
+
+### Run the Deployment Script
+
+```bash
+./terraform-ansible.sh
+```
+
 This will:
 
-Create EC2 instance using Terraform
-Update inventory with new instance IP
-Configure the instance using Ansible
-Deploy Minikube, ArgoCD, Jenkins, and your web application
+1. Create an EC2 instance using Terraform.
+2. Update the inventory with the new instance IP.
+3. Configure the instance using Ansible.
+4. Deploy Minikube, ArgoCD, Jenkins, and your web application.
 
 ```mermaid
 flowchart TD
